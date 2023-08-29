@@ -1,5 +1,6 @@
-from sqlalchemy import Column, String,Integer,Boolean,ForeignKey,TEXT
+from sqlalchemy import Column, String,Integer,Boolean,ForeignKey,TEXT,DateTime
 from typing import Optional
+from sqlalchemy.sql import func
 
 from sqlalchemy.orm import declarative_base
 Base=declarative_base()
@@ -130,8 +131,72 @@ class CompensatoryRequestScheduler(Base):
     w_id=Column(Integer,ForeignKey('worklocation.w_id'))
     include_overtime_done=Column(Boolean)
 
-        
 
+        
+class User(Base):
+    __tablename__='users'
+    id=Column(Integer,autoincrement=True,primary_key=True)
+    name=Column(String(100))
+    email=Column(String(100),unique=True)
+    password_hash=Column(String(256))
+    o_id=Column(Integer,ForeignKey("organization.o_id"))
+    ph_num=Column(String(20))
+    admin=Column(Boolean)
+    created_by=Column(Integer)
+    updated_by=Column(Integer)
+    manager_id=Column(Integer)
+    is_deleted=Column(Boolean,default=False)
+
+    def __init__(self,name,email,password_hash,ph_num):
+        self.name=name
+        self.email=email
+        self.password_hash=password_hash
+        self.ph_num=ph_num
+
+
+class Employee(Base):
+    __tablename__='employee'
+    id=Column(Integer,primary_key=True,autoincrement=True)
+    first_name=Column(String(50))
+    last_name=Column(String(50))
+    email=Column(String(50))
+    department=Column(String(50))
+    designation=Column(String(50))
+    location=Column(String(50))
+    role=Column(String(50))
+    manager=Column(Integer)
+    o_id=Column(Integer)
+    added_by=Column(Integer)
+    updated_by=Column(Integer)
+
+
+
+    def __init__(self,first_name,last_name,email,department,designation,location,role,manager,o_id):
+        self.first_name=first_name
+        self.last_name=last_name
+        self.email=email
+        self.department=department
+        self.designation=designation
+        self.location=location
+        self.role=role
+        self.manager=manager
+        self.o_id=o_id
+
+# class Organization(Base):
+#     __tablename__ = 'organization'
+#     id = Column(Integer, primary_key=True, index=True,autoincrement=True)
+#     organization_name = Column(String(150),nullable=False)
+#     organization_type =Column(String(100))
+#     location=Column(String(50))
+#     is_deleted =Column(Boolean,default =False)
+#     created_by =Column(Integer)
+#     updated_by =Column(Integer)
+#     created_at = Column(DateTime, default=func.now())
+#     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+
+#     def __init__(self, **kwargs):
+#         super(Organization, self).__init__(**kwargs)
+#         self.updated_at = func.now()
 
 
 

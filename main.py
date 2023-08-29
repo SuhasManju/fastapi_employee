@@ -4,6 +4,9 @@ from organization import org
 from worklocation import workloc
 from department import depart
 from designation import desig
+from users.user import user
+from employee.employee import employee
+
 from fastapi.middleware.cors import CORSMiddleware
 app=FastAPI()
 app_router=APIRouter()
@@ -14,6 +17,8 @@ app_router.include_router(workloc)
 app_router.include_router(depart)
 app_router.include_router(desig)
 app_router.include_router(paysche)
+app_router.include_router(user)
+app_router.include_router(employee)
 app.include_router(app_router)
 
 app.add_middleware(
