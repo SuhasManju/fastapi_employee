@@ -139,12 +139,10 @@ class User(Base):
     name=Column(String(100))
     email=Column(String(100),unique=True)
     password_hash=Column(String(256))
-    o_id=Column(Integer,ForeignKey("organization.o_id"))
     ph_num=Column(String(20))
     admin=Column(Boolean)
     created_by=Column(Integer)
     updated_by=Column(Integer)
-    manager_id=Column(Integer)
     is_deleted=Column(Boolean,default=False)
 
     def __init__(self,name,email,password_hash,ph_num):
@@ -171,16 +169,16 @@ class Employee(Base):
 
 
 
-    def __init__(self,first_name,last_name,email,department,designation,location,role,manager,o_id):
-        self.first_name=first_name
-        self.last_name=last_name
-        self.email=email
-        self.department=department
-        self.designation=designation
-        self.location=location
-        self.role=role
-        self.manager=manager
-        self.o_id=o_id
+    # def __init__(self,first_name,last_name,email,department,designation,location,role,manager,o_id):
+    #     self.first_name=first_name
+    #     self.last_name=last_name
+    #     self.email=email
+    #     self.department=department
+    #     self.designation=designation
+    #     self.location=location
+    #     self.role=role
+    #     self.manager=manager
+    #     self.o_id=o_id
 
 # class Organization(Base):
 #     __tablename__ = 'organization'

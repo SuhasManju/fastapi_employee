@@ -6,6 +6,7 @@ from employee.employee_schema import EmployeeIn,EmployeeOut,Otpin
 from .email_service import email_generate
 import redis
 import json
+from passlib.hash import bcrypt
 
 employee=APIRouter(tags=['Employee'])
 
@@ -23,10 +24,14 @@ def add_employee(backgroundTasks:BackgroundTasks,emp_data:EmployeeIn,user=Depend
     user_result1=db.query(Employee).filter(Employee.first_name==emp_data.first_name,Employee.last_name==emp_data.last_name).first()
     if user_result1:
         raise HTTPException(status_code=409,detail="Employee already exists")
-    
-    manager_result=db.query(Employee).filter(Employee.first_name == emp_data.manager.first_name , Employee.last_name==emp_data.manager.last_name).first()
-    if not manager_result:
-        raise HTTPException(404,detail='Manager not found')
+    if emp_data.manager.last_name:
+        manager_result=db.query(Employee).filter(Employee.first_name == emp_data.manager.first_name , Employee.last_name==emp_data.manager.last_name).first()
+        if not manager_result:
+            raise HTTPException(404,detail='Manager not found')
+    else:
+        manager_result=db.query(Employee).filter(Employee.first_name==emp_data.manager.first_name).first()
+        if not manager_result:
+            raise HTTPException(404,detail="Manager not found")
     
     emp=EmployeeOut(
         first_name=emp_data.first_name,
@@ -85,8 +90,23 @@ def confirm_employee(o:Otpin):
     emp.updated_by=data['added_by']
     db.add(emp)
     db.commit()
+    add_user=User(
+        name=data['first_name']+" "+data['last_name'],
+        email=data['email'],
+        password_hash=bcrypt.hash(o.password),
+        ph_num=None
+                  )
+    if emp.role=='admin':
+        add_user.admin=True
+    else:
+        add_user.admin=False
+    add_user.created_by=data['added_by']
+    add_user.updated_by=data['added_by']
+    db.add(add_user)
+    db.commit()
     return {'message':'employee successfully added'}
     
+
 
     
     

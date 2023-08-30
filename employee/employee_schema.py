@@ -1,9 +1,10 @@
 from pydantic import BaseModel,EmailStr
+from typing import Optional
 
 
 class ReportingManager(BaseModel):
     first_name:str
-    last_name:str
+    last_name:Optional[str]
 
 class EmployeeIn(BaseModel):
     first_name:str
@@ -32,4 +33,5 @@ class EmployeeOut(BaseModel):
 
 class Otpin(BaseModel):
     email:EmailStr
+    password:str
     otp:str

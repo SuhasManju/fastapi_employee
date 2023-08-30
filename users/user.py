@@ -60,6 +60,9 @@ def validate_otp(o:Otpin):
     useradmin.admin=True
     db.add(useradmin)
     db.commit()
+    admin_employee=Employee(first_name=data['name'],role='admin',email=data['email'],added_by=useradmin.id)
+    db.add(admin_employee)
+    db.commit()
     redis_client.delete(o.email)
     return {'message':'Successfull created'}
 
