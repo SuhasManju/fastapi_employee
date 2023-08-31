@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String,Integer,Boolean,ForeignKey,TEXT,DateTime
+from sqlalchemy import Column, String,Integer,Boolean,ForeignKey,TEXT,DateTime,Text
 from typing import Optional
 from sqlalchemy.sql import func
 
@@ -163,6 +163,10 @@ class Employee(Base):
     location=Column(String(50))
     role=Column(String(50))
     manager=Column(Integer)
+    gender=Column(String(10))
+    marital_status=Column(String(10))
+    employee_type=Column(String(10))
+    source_of_hire=Column(String(10))
     o_id=Column(Integer)
     added_by=Column(Integer)
     updated_by=Column(Integer)
@@ -196,6 +200,92 @@ class Employee(Base):
 #         super(Organization, self).__init__(**kwargs)
 #         self.updated_at = func.now()
 
-
+class Mg_LeaveType(Base):
+    __tablename__ = "mg_leave_type"
+    id = Column(Integer, primary_key=True, index=True)
+    leave_type_name = Column(String(50))
+    leave_type_code = Column(String(20))
+    leave_type = Column(String(20))
+    unit = Column(String(30))
+    balance_based_on = Column(String(50))
+    description = Column(Text(),nullable=True)
+    start_date = Column(String(50))
+    end_date = Column(String(50))
+    effictive_after = Column(String(100),nullable=True)
+    effictive_from = Column(String(20),nullable=True)
+    accural =Column(String(50),nullable=True)
+    accural_by =Column(String(50),nullable=True) # accural by yearly,monthly etc
+    accural_on=Column(String(50),nullable=True) #1st,2nd,3rd,4th etc
+    accural_month_on = Column(String(50),nullable=True)#by month 
+    accural_by_days=Column(String(10),nullable=True)
+    accural_by_hour = Column(String(10),nullable=True)
+    accural_in=Column(String(20),nullable=True)
+    reset=Column(String(40),nullable=True)
+    reset_by=Column(String(50),nullable=True)# by yearly,monthly etc
+    reset_on=Column(String(50),nullable=True)
+    reset_month_on = Column(String(50),nullable=True)
+    reset_with = Column(String(50),nullable=True) # for carry_forward field and other
+    reset_on_the = Column(String(50),nullable=True) #for storin number field
+    reset_carry_by = Column(String(50),nullable=True) # for storing percentage or unit
+    reset_carry_max_unit = Column(String(50),nullable=True)
+    encashment = Column(String(10),nullable=True)
+    encasment_by =Column(String(50),nullable=True)# encasment for storing percentage or unit
+    encashment_max_unit=Column(String(50),nullable=True)
+    prorate_accural=Column(String(50),nullable=True)
+    prorate_by =Column(String(50),nullable=True)
+    round_of_to =Column(String(50),nullable=True)
+    round_of_start = Column(String(50),nullable=True)
+    round_of_end = Column(String(50),nullable=True)
+    first_month_from = Column(String(20),nullable=True)
+    first_month_to =Column(String(20),nullable=True)
+    first_month_count=Column(String(20),nullable=True)
+    opening_balance = Column(String(50),nullable=True)
+    maximum_balance=Column(String(50),nullable=True)
+    deductible_holidays=Column(String(50),nullable=True)
+    gender = Column(String(10),nullable=True)
+    martial_status=Column(String(10),nullable=True)
+    department = Column(String(20),nullable=True)
+    designation=Column(String(20),nullable=True)
+    location = Column(String(20),nullable=True)
+    role = Column(String(20),nullable=True)
+    employee_type =Column(String(20),nullable=True)
+    source_of_hire = Column(String(30),nullable=True)
+    onboarding_status=Column(String(40),nullable=True)
+    employee=Column(Boolean,default=False)
+    weekend_between_leave_period = Column(String(150),nullable=True)
+    holidays_between_leave_period = Column(String(150),nullable=True)
+    applying_leaves_excel_balance =Column(String(150),nullable=True)
+    duraction_allowed =Column(String(150),nullable=True)
+    allow_users_to_view = Column(String(50),nullable=True)
+    balance_to_be_displayed = Column(String(50),nullable=True)
+    allow_request_for_past_days =Column(String(50),nullable=True)
+    allow_request_for_future_days =Column(String(50),nullable=True)
+    maximum_leave_availed_per_application = Column(String(150),nullable=True)
+    minimum_leave_availed_per_application = Column(String(150),nullable=True)
+    maximim_number_consecutive_leave_allowed = Column(String(150),nullable=True)
+    minimum_gap_between_two_apps = Column(String(150),nullable=True)
+    enable_file_upload_option = Column(String(150),nullable=True)
+    maximum_number_of_specific_period = Column(String(150),nullable=True)
+    leave_applied_only_on =Column(String(100),nullable=True)
+    leave_cannot_taken_with =Column(String(100),nullable=True)
+    o_id=Column(Integer,ForeignKey("organization.o_id"))
+    is_deleted = Column(Boolean, default=False)
+    created_by = Column(Integer)
+    updated_by = Column(Integer)
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+    def __init__(self, **kwargs):
+        super(Mg_LeaveType, self).__init__(**kwargs)
+        self.updated_at = func.now()
 
     
+class CurrentLeave(Base):
+    __tablename__='currentleave'
+    id=Column(Integer,primary_key=True,autoincrement=True)
+    emp_id=Column(Integer,ForeignKey('employee.id'))
+    leave_type=Column(Integer,ForeignKey("mg_leave_type.id"))
+    num_of_leaves=Column(Integer)
+    booked=Column(Integer)
+    def __init__(self, **kwargs):
+        super(Mg_LeaveType, self).__init__(**kwargs)
+        self.updated_at = func.now()

@@ -6,7 +6,7 @@ from department import depart
 from designation import desig
 from users.user import user
 from employee.employee import employee
-
+from leave_type.leave_type import leave_type
 from fastapi.middleware.cors import CORSMiddleware
 app=FastAPI()
 app_router=APIRouter()
@@ -19,6 +19,7 @@ app_router.include_router(desig)
 app_router.include_router(paysche)
 app_router.include_router(user)
 app_router.include_router(employee)
+app_router.include_router(leave_type)
 app.include_router(app_router)
 
 app.add_middleware(
