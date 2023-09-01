@@ -7,6 +7,7 @@ from users.user import autheniticate_user
 from fastapi.responses import JSONResponse
 from typing import List
 from fastapi.encoders import jsonable_encoder
+import json
 from sqlalchemy.orm.state import InstanceState
 from itertools import zip_longest
 
@@ -17,6 +18,8 @@ def create_leave_type(
     mg_leave_type: Mg_LeaveTypeIn,
     current_user: User = Depends(autheniticate_user)
 ):
+    if not current_user['admin']:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Only admin can add leave type")
     db = session()
 
     existing_leave_type = db.query(Mg_LeaveType).filter(
@@ -39,22 +42,22 @@ def create_leave_type(
 
    
 
-    for gender, martial_status, department, designation, location, role, employee_type, source_of_hire,duration_allowed,allow_request_for_future_days,leave_applied_only_on,leave_cannot_taken_with in zip_longest(
-        mg_leave_type.applicable.gender,
-        mg_leave_type.applicable.martial_status,
-        mg_leave_type.applicable.department,
-        mg_leave_type.applicable.designation,
-        mg_leave_type.applicable.location,
-        mg_leave_type.applicable.role,
-        mg_leave_type.applicable.employee_type,
-        mg_leave_type.applicable.source_of_hire,
-        mg_leave_type.restriction.duration_allowed,
-        mg_leave_type.restriction.allow_request_for_future_days,
-        mg_leave_type.restriction.leave_applied_only_on,
-        mg_leave_type.restriction.leave_cannot_taken_with,
-        fillvalue=None,
-    ):
-        leave_type_obj = Mg_LeaveType(
+    # for gender, martial_status, department, designation, location, role, employee_type, source_of_hire,duration_allowed,allow_request_for_future_days,leave_applied_only_on,leave_cannot_taken_with in zip_longest(
+    #     mg_leave_type.applicable.gender,
+    #     mg_leave_type.applicable.martial_status,
+    #     mg_leave_type.applicable.department,
+    #     mg_leave_type.applicable.designation,
+    #     mg_leave_type.applicable.location,
+    #     mg_leave_type.applicable.role,
+    #     mg_leave_type.applicable.employee_type,
+    #     mg_leave_type.applicable.source_of_hire,
+    #     mg_leave_type.restriction.duration_allowed,
+    #     mg_leave_type.restriction.allow_request_for_future_days,
+    #     mg_leave_type.restriction.leave_applied_only_on,
+    #     mg_leave_type.restriction.leave_cannot_taken_with,
+    #     fillvalue=None,
+    # ):
+    leave_type_obj = Mg_LeaveType(
         leave_type_name=mg_leave_type.leave_type_name,
         leave_type_code=mg_leave_type.leave_type_code,
         leave_type=mg_leave_type.leave_type,
@@ -94,21 +97,21 @@ def create_leave_type(
         opening_balance=mg_leave_type.entitlement.opening_balance,
         maximum_balance=mg_leave_type.entitlement.maximum_balance,
         deductible_holidays=mg_leave_type.entitlement.deductible_holidays,
-        gender=gender,
-        martial_status=martial_status,
-        department=department,
-        designation=designation,
-        location=location,
-        role=role,
-        employee_type=employee_type,
-        source_of_hire=source_of_hire,
+        gender=json.dumps(mg_leave_type.applicable.gender),
+        martial_status=json.dumps(mg_leave_type.applicable.martial_status),
+        department=json.dumps(mg_leave_type.applicable.department),
+        designation=json.dumps(mg_leave_type.applicable.designation),
+        location=json.dumps(mg_leave_type.applicable.location),
+        role=json.dumps(mg_leave_type.applicable.role),
+        employee_type=json.dumps(mg_leave_type.applicable.employee_type),
+        source_of_hire=json.dumps(mg_leave_type.applicable.source_of_hire),
         onboarding_status=mg_leave_type.applicable.onboarding_status,
         employee=mg_leave_type.applicable.employee,
         weekend_between_leave_period=mg_leave_type.restriction.weekend_between_leave_period,
-        duraction_allowed=duration_allowed,
-        allow_request_for_future_days=allow_request_for_future_days,
-        leave_applied_only_on=leave_applied_only_on,
-        leave_cannot_taken_with=leave_cannot_taken_with,
+        duraction_allowed=json.dumps(mg_leave_type.restriction.duration_allowed),
+        allow_request_for_future_days=json.dumps(mg_leave_type.restriction.allow_request_for_future_days),
+        leave_applied_only_on=json.dumps(mg_leave_type.restriction.leave_applied_only_on),
+        leave_cannot_taken_with=json.dumps(mg_leave_type.restriction.leave_cannot_taken_with),
         holidays_between_leave_period=mg_leave_type.restriction.holidays_between_leave_period,
         applying_leaves_excel_balance=mg_leave_type.restriction.applying_leaves_excel_balance,
         allow_users_to_view=mg_leave_type.restriction.allow_users_to_view,
@@ -123,8 +126,8 @@ def create_leave_type(
         o_id=current_user.get('o_id'),
         created_by=current_user.get('id'),
         updated_by=current_user.get('id')
-        )
-        db.add(leave_type_obj)
+    )
+    db.add(leave_type_obj)
     db.commit()
     db.refresh(leave_type_obj)
     response_data = {"message": "Created Successfully"}
@@ -158,10 +161,14 @@ def get_all_mg_leave_type(current_user: User = Depends(autheniticate_user)):
                 description=datas.description,
                 start_date=datas.start_date,
                 end_date=datas.end_date,
+                gender=json.loads(datas.gender),
+                marital_status=json.loads(datas.martial_status),
+                department=json.loads(datas.department)
                 
                 
             )
         )
+       
     return JSONResponse(jsonable_encoder(result))
 
 

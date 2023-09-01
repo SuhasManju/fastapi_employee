@@ -99,9 +99,9 @@ class Mg_LeaveTypeOut(BaseModel):
     description:Optional[str]
     start_date: str
     end_date :str
-    # entitlement:Entitlement
-    # applicable:Apllicable
-    # restriction:Restriction
+    gender: List[str]
+    marital_status:List[str]
+    department:List[str]
 
 
     class config:

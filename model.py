@@ -173,32 +173,6 @@ class Employee(Base):
 
 
 
-    # def __init__(self,first_name,last_name,email,department,designation,location,role,manager,o_id):
-    #     self.first_name=first_name
-    #     self.last_name=last_name
-    #     self.email=email
-    #     self.department=department
-    #     self.designation=designation
-    #     self.location=location
-    #     self.role=role
-    #     self.manager=manager
-    #     self.o_id=o_id
-
-# class Organization(Base):
-#     __tablename__ = 'organization'
-#     id = Column(Integer, primary_key=True, index=True,autoincrement=True)
-#     organization_name = Column(String(150),nullable=False)
-#     organization_type =Column(String(100))
-#     location=Column(String(50))
-#     is_deleted =Column(Boolean,default =False)
-#     created_by =Column(Integer)
-#     updated_by =Column(Integer)
-#     created_at = Column(DateTime, default=func.now())
-#     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
-
-#     def __init__(self, **kwargs):
-#         super(Organization, self).__init__(**kwargs)
-#         self.updated_at = func.now()
 
 class Mg_LeaveType(Base):
     __tablename__ = "mg_leave_type"
@@ -242,32 +216,32 @@ class Mg_LeaveType(Base):
     opening_balance = Column(String(50),nullable=True)
     maximum_balance=Column(String(50),nullable=True)
     deductible_holidays=Column(String(50),nullable=True)
-    gender = Column(String(10),nullable=True)
-    martial_status=Column(String(10),nullable=True)
-    department = Column(String(20),nullable=True)
-    designation=Column(String(20),nullable=True)
-    location = Column(String(20),nullable=True)
-    role = Column(String(20),nullable=True)
-    employee_type =Column(String(20),nullable=True)
-    source_of_hire = Column(String(30),nullable=True)
+    gender = Column(Text(),nullable=True)
+    martial_status=Column(Text(),nullable=True)
+    department = Column(Text(),nullable=True)
+    designation=Column(Text(),nullable=True)
+    location = Column(Text(),nullable=True)
+    role = Column(Text(),nullable=True)
+    employee_type =Column(Text(),nullable=True)
+    source_of_hire = Column(Text(),nullable=True)
     onboarding_status=Column(String(40),nullable=True)
     employee=Column(Boolean,default=False)
     weekend_between_leave_period = Column(String(150),nullable=True)
     holidays_between_leave_period = Column(String(150),nullable=True)
     applying_leaves_excel_balance =Column(String(150),nullable=True)
-    duraction_allowed =Column(String(150),nullable=True)
+    duraction_allowed =Column(Text(),nullable=True)
     allow_users_to_view = Column(String(50),nullable=True)
     balance_to_be_displayed = Column(String(50),nullable=True)
     allow_request_for_past_days =Column(String(50),nullable=True)
-    allow_request_for_future_days =Column(String(50),nullable=True)
+    allow_request_for_future_days =Column(Text(),nullable=True)
     maximum_leave_availed_per_application = Column(String(150),nullable=True)
     minimum_leave_availed_per_application = Column(String(150),nullable=True)
     maximim_number_consecutive_leave_allowed = Column(String(150),nullable=True)
     minimum_gap_between_two_apps = Column(String(150),nullable=True)
     enable_file_upload_option = Column(String(150),nullable=True)
     maximum_number_of_specific_period = Column(String(150),nullable=True)
-    leave_applied_only_on =Column(String(100),nullable=True)
-    leave_cannot_taken_with =Column(String(100),nullable=True)
+    leave_applied_only_on =Column(Text(),nullable=True)
+    leave_cannot_taken_with =Column(Text(),nullable=True)
     o_id=Column(Integer,ForeignKey("organization.o_id"))
     is_deleted = Column(Boolean, default=False)
     created_by = Column(Integer)
@@ -286,6 +260,7 @@ class CurrentLeave(Base):
     leave_type=Column(Integer,ForeignKey("mg_leave_type.id"))
     num_of_leaves=Column(Integer)
     booked=Column(Integer)
+    o_id=Column(Integer)
     def __init__(self, **kwargs):
-        super(Mg_LeaveType, self).__init__(**kwargs)
-        self.updated_at = func.now()
+        super(CurrentLeave, self).__init__(**kwargs)
+
