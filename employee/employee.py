@@ -7,6 +7,7 @@ from .email_service import email_generate
 import redis
 import json
 from passlib.hash import bcrypt
+import pika
 
 employee=APIRouter(tags=['Employee'])
 
@@ -45,7 +46,15 @@ def add_employee(backgroundTasks:BackgroundTasks,emp_data:EmployeeIn,user=Depend
         o_id=user['o_id'],
         added_by=admin_result.id
     )
-    backgroundTasks.add_task(email_generate,backgroundTasks,user['email'],emp)
+    credentials=pika.PlainCredentials(username="guest",password="guest")
+    paramenter=pika.ConnectionParameters(host='localhost',port=5672,credentials=credentials)
+    connection=pika.BlockingConnection(paramenter)
+    channel=connection.channel()
+    channel.queue_declare(queue="employee_email_service")
+    body={'email':user['email'],'userdata':emp.model_dump()}
+    channel.basic_publish("",'employee_email_service',body=json.dumps(body))
+    connection.close()
+    #backgroundTasks.add_task(email_generate,backgroundTasks,user['email'],emp)
     return {"message":'OTP sent'}
 
 @employee.post("/employeeotp")

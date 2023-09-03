@@ -7,7 +7,7 @@ import jwt
 import json
 from datetime import datetime,timedelta
 from model import User,Organization,Employee
-
+import pika
 user=APIRouter(tags=["Register"])
 from passlib.hash import bcrypt
 import redis
@@ -17,10 +17,18 @@ def register_user(background_taks:BackgroundTasks,u:UserIn):
     result=db.query(User).filter(User.email==u.email).first()
     if result:
         raise HTTPException(status_code=409,detail='User already exists')
-
+    
+    credentials=pika.PlainCredentials(username="guest",password="guest")
+    paramenter=pika.ConnectionParameters(host='localhost',port=5672,credentials=credentials)
+    connection=pika.BlockingConnection(paramenter)
+    channel=connection.channel()
+    channel.queue_declare(queue="email_service")
+    body={'email':u.email,'userdata':u.model_dump()}
+    channel.basic_publish("",'email_service',body=json.dumps(body))
+    connection.close()
     
 
-    background_taks.add_task(email_generate,background_taks,u.email,u)
+    #background_taks.add_task(email_generate,background_taks,u.email,u)
     return {"message","otp sent"}
 
 @user.post('/signupotp')
