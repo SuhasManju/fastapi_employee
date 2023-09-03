@@ -2,12 +2,13 @@ import smtplib
 from random import randint
 import redis
 import json
-#from users.userschema import UserIn
+import os
+import dotenv
 from pydantic import EmailStr
 import pika
 
-credentials=pika.PlainCredentials(username="guest",password="guest")
-paramenter=pika.ConnectionParameters(host='localhost',port=5672,credentials=credentials)
+credentials=pika.PlainCredentials(username=os.getenv("PIKA_USERNAME"),password=os.getenv("PIKA_PASSWORD"))
+paramenter=pika.ConnectionParameters(host=os.getenv('PIKA_HOST'),port=5672,credentials=credentials)
 connection=pika.BlockingConnection(paramenter)
 channel=connection.channel()
 channel.queue_declare(queue="employee_email_service",durable=False)
@@ -19,8 +20,8 @@ def email_generate(ch,method,properties,body):
     smtp_obj=smtplib.SMTP('smtp.gmail.com',587)
     smtp_obj.ehlo()
     smtp_obj.starttls()
-    smtp_obj.login('leeg13849@gmail.com','gdozktjbnsymujua')
-    from_address='leeg13849@gmail.com'
+    smtp_obj.login(os.getenv('EMAIL_ID'),os.getenv('EMAIL_PASSWORD'))
+    from_address=os.getenv('EMAIL_ID')
     to_address=data['email']
     otp=str(randint(1001,9999))
     subject=" Sent a request to join there organization"
