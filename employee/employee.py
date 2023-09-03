@@ -3,7 +3,7 @@ from database import session
 from model import Employee,User
 from users.user import autheniticate_user
 from employee.employee_schema import EmployeeIn,EmployeeOut,Otpin
-from .email_service import email_generate
+
 import redis
 import json
 from passlib.hash import bcrypt
@@ -12,7 +12,7 @@ import pika
 employee=APIRouter(tags=['Employee'])
 
 @employee.post("/employee")
-def add_employee(backgroundTasks:BackgroundTasks,emp_data:EmployeeIn,user=Depends(autheniticate_user)):
+def add_employee(emp_data:EmployeeIn,user=Depends(autheniticate_user)):
     db=session()
     if user['admin']!=True:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="You don't have the privlage to add employee")
@@ -54,7 +54,7 @@ def add_employee(backgroundTasks:BackgroundTasks,emp_data:EmployeeIn,user=Depend
     body={'email':user['email'],'userdata':emp.model_dump()}
     channel.basic_publish("",'employee_email_service',body=json.dumps(body))
     connection.close()
-    #backgroundTasks.add_task(email_generate,backgroundTasks,user['email'],emp)
+   
     return {"message":'OTP sent'}
 
 @employee.post("/employeeotp")

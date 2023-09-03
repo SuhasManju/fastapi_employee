@@ -1,6 +1,6 @@
 from fastapi import APIRouter,HTTPException,BackgroundTasks,Depends,status
 from fastapi.security import OAuth2PasswordBearer,OAuth2PasswordRequestForm
-from users.email_service import email_generate
+
 from users.userschema import UserIn,Otpin,UserOut
 from database import session
 import jwt
@@ -12,7 +12,7 @@ user=APIRouter(tags=["Register"])
 from passlib.hash import bcrypt
 import redis
 @user.post("/register")
-def register_user(background_taks:BackgroundTasks,u:UserIn):
+def register_user(u:UserIn):
     db=session()
     result=db.query(User).filter(User.email==u.email).first()
     if result:
@@ -26,9 +26,7 @@ def register_user(background_taks:BackgroundTasks,u:UserIn):
     body={'email':u.email,'userdata':u.model_dump()}
     channel.basic_publish("",'email_service',body=json.dumps(body))
     connection.close()
-    
 
-    #background_taks.add_task(email_generate,background_taks,u.email,u)
     return {"message","otp sent"}
 
 @user.post('/signupotp')
