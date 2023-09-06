@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String,Integer,Boolean,ForeignKey,TEXT,DateTime,Text
+from sqlalchemy import Column, String,Integer,Boolean,ForeignKey,TEXT,DateTime,Text,DATE
 from typing import Optional
 from sqlalchemy.sql import func
 
@@ -170,6 +170,25 @@ class Employee(Base):
     o_id=Column(Integer)
     added_by=Column(Integer)
     updated_by=Column(Integer)
+    joining_date=Column(DATE)
+    nick_name=Column(String(50))
+    dob=Column(DATE)
+    about_me=Column(Text())
+    Expertise=Column(Text())
+    pan=Column(String(50))
+    uan=Column(String(50))
+    aadhaar=Column(String(50))
+    ph_num=Column(String(50))
+    seating_location=Column(String(10))
+    Tags=Column(String(50))
+    presentaddress=Column(String(50))
+    permanentaddress=Column(String(50))
+    person_ph_num=Column(String(50))
+    personalemail_id=Column(String(50))
+    workExperience=Column(Text())
+    education_details=Column(Text())
+    dependent_details=Column(Text())
+
 
 
 
@@ -263,4 +282,18 @@ class CurrentLeave(Base):
     o_id=Column(Integer)
     def __init__(self, **kwargs):
         super(CurrentLeave, self).__init__(**kwargs)
+
+
+class PersonalInformation(Base):
+    __tablename__="PersonalInformation"
+    id=Column(Integer,primary_key=True,autoincrement=True)
+    first_name=Column(String(50))
+    last_name=Column(String(50))
+    middle_name=Column(String(50))
+    gender=Column(String(50))
+    location=Column(String(50))
+
+
+    def __init__(self, **kwargs):
+        super(PersonalInformation, self).__init__(**kwargs)
 

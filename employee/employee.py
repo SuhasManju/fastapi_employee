@@ -3,6 +3,7 @@ from database import session
 from model import Employee,User
 from users.user import autheniticate_user
 from employee.employee_schema import EmployeeIn,EmployeeOut,Otpin
+from datetime import datetime,date
 
 import redis
 import json
@@ -33,7 +34,22 @@ def add_employee(emp_data:EmployeeIn,user=Depends(autheniticate_user)):
         manager_result=db.query(Employee).filter(Employee.first_name==emp_data.manager.first_name).first()
         if not manager_result:
             raise HTTPException(404,detail="Manager not found")
-    
+    try:
+        joining_date=(datetime.strptime(emp_data.joining_date,"%Y/%m/%d"))
+        dob=datetime.strptime(emp_data.dob,"%Y/%m/%d")
+    except:
+        raise HTTPException(status_code=422,detail="Date object not found")
+    work_experience=[]
+    for i in emp_data.work_experience:
+        work_experience.append(i.model_dump())
+    education_details=[]
+    for i in emp_data.education_details:
+        education_details.append(i.model_dump())
+    dependent_details=[]
+    for i in emp_data.education_details:
+        education_details.append(i.model_dump())
+    print(dob.date())
+    print(joining_date.date())
     emp=EmployeeOut(
         first_name=emp_data.first_name,
         last_name=emp_data.last_name,
@@ -44,21 +60,43 @@ def add_employee(emp_data:EmployeeIn,user=Depends(autheniticate_user)):
         role=emp_data.role,
         manager=manager_result.id,
         o_id=user['o_id'],
-        added_by=admin_result.id
+        added_by=admin_result.id,
+        joining_date=str(joining_date.date()),
+        nick_name=emp_data.nick_name,
+        dob=str(dob.date()),
+        about_me=emp_data.about_me,
+        Expertise=emp_data.Expertise,
+        pan=emp_data.pan,
+        uan=emp_data.uan,
+        aadhaar=emp_data.aadhaar,
+        ph_num=emp_data.ph_num,
+        seating_location=emp_data.seating_location,
+        Tags=emp_data.Tags,
+        presentaddress=emp_data.presentaddress,
+        permanentaddress=emp_data.permanentaddress,
+        person_ph_num=emp_data.person_ph_num,
+        personalemail_id=emp_data.personalemail_id,
+        work_experience=json.dumps(work_experience),
+        education_details=json.dumps(education_details),
+        dependent_details=json.dumps(dependent_details),
+        gender=emp_data.gender,
+        marital_staus=emp_data.marital_staus,
+        employee_type=emp_data.employee_type,
+        source_of_hire=emp_data.source_of_hire
     )
     credentials=pika.PlainCredentials(username="guest",password="guest")
     paramenter=pika.ConnectionParameters(host='localhost',port=5672,credentials=credentials)
     connection=pika.BlockingConnection(paramenter)
     channel=connection.channel()
-    channel.queue_declare(queue="employee_email_service")
-    body={'email':user['email'],'userdata':emp.model_dump()}
+    channel.queue_declare(queue="employee_email_service",durable=False)
+    body={'email':emp.email,'userdata':emp.model_dump()}
     channel.basic_publish("",'employee_email_service',body=json.dumps(body))
     connection.close()
    
     return {"message":'OTP sent'}
 
 @employee.post("/employeeotp")
-def confirm_employee(o:Otpin):
+def confirm_employee(backGroundTasks:BackgroundTasks,o:Otpin):
     redis_client=redis.Redis(host='localhost',port=6379)
     db=session()
     try:
@@ -91,8 +129,30 @@ def confirm_employee(o:Otpin):
         designation=data['designation'],
         location=data['location'],
         role=data['role'],
+        gender=data['gender'],
+        marital_status=data['marital_staus'],
+        employee_type=data['employee_type'],
+        source_of_hire=data['source_of_hire'],
         manager=data['manager'],
-        o_id=data['o_id']
+        o_id=data['o_id'],
+        joining_date=data['joining_date'],
+        nick_name=data['nick_name'],
+        dob=data['dob'],
+        about_me=data['about_me'],
+        Expertise=data['Expertise'],
+        pan=data['pan'],
+        uan=data['uan'],
+        aadhaar=data['aadhaar'],
+        ph_num=data['ph_num'],
+        seating_location=data['seating_location'],
+        Tags=data['Tags'],
+        presentaddress=data['presentaddress'],
+        permanentaddress=data['permanentaddress'],
+        person_ph_num=data['person_ph_num'],
+        personalemail_id=data['personalemail_id'],
+        workExperience=data['work_experience'],
+        education_details=data['education_details'],
+        dependent_details=data['dependent_details']
 
     )
     emp.added_by=data['added_by']
@@ -103,7 +163,7 @@ def confirm_employee(o:Otpin):
         name=data['first_name']+" "+data['last_name'],
         email=data['email'],
         password_hash=bcrypt.hash(o.password),
-        ph_num=None
+        ph_num=data['ph_num']
                   )
     if emp.role=='admin':
         add_user.admin=True

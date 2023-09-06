@@ -26,6 +26,7 @@ def email_generate(ch,method,properties,body):
     otp=str(randint(1001,9999))
     subject=" Sent a request to join there organization"
     message=f"OTP {data['email']} to signup into your account {otp}"
+    msg="Subject: "+subject+"\n"+message
     try:
         smtp_obj.sendmail(from_address,to_address,message)
     except smtplib.SMTPRecipientsRefused:

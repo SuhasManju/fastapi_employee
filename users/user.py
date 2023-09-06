@@ -22,7 +22,7 @@ def register_user(u:UserIn):
     paramenter=pika.ConnectionParameters(host='localhost',port=5672,credentials=credentials)
     connection=pika.BlockingConnection(paramenter)
     channel=connection.channel()
-    channel.queue_declare(queue="email_service")
+    channel.queue_declare(queue="email_service",durable=False)
     body={'email':u.email,'userdata':u.model_dump()}
     channel.basic_publish("",'email_service',body=json.dumps(body))
     connection.close()
