@@ -3,7 +3,8 @@ from database import session
 from model import Employee,User
 from users.user import autheniticate_user
 from employee.employee_schema import EmployeeIn,EmployeeOut,Otpin
-from datetime import datetime,date
+from datetime import datetime
+from employee.employe_background import addcurrentleave
 
 import redis
 import json
@@ -172,6 +173,9 @@ def confirm_employee(backGroundTasks:BackgroundTasks,o:Otpin):
     add_user.created_by=data['added_by']
     add_user.updated_by=data['added_by']
     db.add(add_user)
+    db.commit()
+    db.refresh(add_user)
+    backGroundTasks.add_task(addcurrentleave,backGroundTasks,emp.id,emp.o_id)
     db.commit()
     return {'message':'employee successfully added'}
     
