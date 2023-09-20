@@ -1,5 +1,5 @@
 from fastapi.routing import APIRouter
-from fastapi import status,HTTPException,Depends,Request
+from fastapi import status,HTTPException,Depends,Request,BackgroundTasks
 from database import *
 from model import *
 from .schema import *
@@ -9,12 +9,13 @@ from typing import List
 from fastapi.encoders import jsonable_encoder
 import json
 from sqlalchemy.orm.state import InstanceState
-from itertools import zip_longest
+from leave_type.leave_typebackground import addcurrentleave
 
 leave_type = APIRouter(tags=['leave_type'])
 
 @leave_type.post("/mg_leave_type", tags=['leave_type'])
 def create_leave_type(
+    backgroundTasks:BackgroundTasks,
     mg_leave_type: Mg_LeaveTypeIn,
     current_user: User = Depends(autheniticate_user)
 ):
@@ -130,6 +131,7 @@ def create_leave_type(
     db.add(leave_type_obj)
     db.commit()
     db.refresh(leave_type_obj)
+    backgroundTasks.add_task(addcurrentleave,backgroundTasks,leave_type_obj.id,leave_type_obj.o_id)
     response_data = {"message": "Created Successfully"}
     return JSONResponse(jsonable_encoder(response_data))
 
