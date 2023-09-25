@@ -1,7 +1,6 @@
 from fastapi import APIRouter,HTTPException,BackgroundTasks,Depends,status
 from fastapi.security import OAuth2PasswordBearer,OAuth2PasswordRequestForm
-
-from users.userschema import UserIn,Otpin,UserOut
+from users.userschema import UserIn,Otpin,UserOut,UserOut1
 from database import session
 import jwt
 import json
@@ -11,6 +10,9 @@ import pika
 user=APIRouter(tags=["Register"])
 from passlib.hash import bcrypt
 import redis
+
+JWT_SECRET='e1fbc4d156244e20b21f5efea02a125f3da866fba96d345a4c07970424b3d65e'
+
 @user.post("/register")
 def register_user(u:UserIn):
     db=session()
@@ -70,10 +72,20 @@ def validate_otp(o:Otpin):
     db.add(admin_employee)
     db.commit()
     redis_client.delete(o.email)
-    return {'message':'Successfull created'}
+    x=datetime.utcnow()+timedelta(days=7)
+    userout=UserOut(
+        email=useradmin.email,
+        exp=x,
+         #change it back to result.o_id
+        admin=useradmin.admin,
+        o_id=0
+
+    )
+    token=jwt.encode(userout.model_dump(),JWT_SECRET)
+    return {"access_token":token,"token_type":'bearer'}
 
 
-JWT_SECRET='e1fbc4d156244e20b21f5efea02a125f3da866fba96d345a4c07970424b3d65e'
+
 oauth2_scheme=OAuth2PasswordBearer(tokenUrl='/login')
 @user.post("/login")
 def get_token(loginData:OAuth2PasswordRequestForm=Depends()):
