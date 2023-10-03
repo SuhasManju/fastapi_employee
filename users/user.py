@@ -1,6 +1,6 @@
 from fastapi import APIRouter,HTTPException,BackgroundTasks,Depends,status
 from fastapi.security import OAuth2PasswordBearer,OAuth2PasswordRequestForm
-from users.userschema import UserIn,Otpin,UserOut,UserOut1
+from users.userschema import UserIn,Otpin,UserOut
 from database import session
 import jwt
 import json
@@ -113,11 +113,10 @@ async def autheniticate_user(token: str =Depends(oauth2_scheme)):
         db=session()
         
         user=jwt.decode(token,JWT_SECRET,algorithms=['HS256'])
-        print(user)
         result=db.query(User).filter(User.email==user['email']).first()
-        print(result)
         if not result:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail='user couldnt be authenticate')
+        user['o_id']=1
         return user
     
 @user.get("/users/me")

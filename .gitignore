@@ -4,3 +4,5 @@ revision
 .env
 migration
 personalinformation
+.vscode
+access.log

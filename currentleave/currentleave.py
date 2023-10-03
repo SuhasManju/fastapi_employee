@@ -58,3 +58,24 @@ def get_currentleaves(user=Depends(autheniticate_user)):
         )
         x.append(z)
     return x
+
+
+@currentleave_router.post("/currentleave/customupdate")
+def customUpdate(update:CurrentLeaveCustom,user=Depends(autheniticate_user)):
+    db=session()
+    leave_result=db.query(Mg_LeaveType).filter(Mg_LeaveType.leave_type_name==update.leave_type,Mg_LeaveType.o_id==user['o_id']).first()
+    if not leave_result:
+        raise HTTPException(status_code=404,detail="Leave type not found")
+    emp_result=db.query(Employee).filter(Employee.email==update.emp_email,Employee.o_id==user['o_id']).first()
+    if not emp_result:
+        raise HTTPException(status_code=404,detail="Employee not found")
+    curr_result=db.query(CurrentLeave).filter(CurrentLeave.leave_type==leave_result.id,CurrentLeave.emp_id==emp_result.id).first()
+    if not curr_result:
+        raise HTTPException(status_code=404,detail="CurrentLeave not found")
+    
+    curr_result.num_of_leaves=update.no_leaves
+    db.commit()
+    db.refresh(curr_result)
+    return {"message":"Successfuly updated"}
+    
+    

@@ -1,4 +1,3 @@
-import os
-import dotenv
-dotenv.load_dotenv()
-print(os.getenv("DB_USER"))
+import json
+x=['Female',"Male"]
+print(json.dumps(x).lower())
