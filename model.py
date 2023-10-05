@@ -65,17 +65,15 @@ class Department(Base):
     dept_code=Column(String(50))
     description=Column(TEXT,nullable=True)
     o_id=Column(Integer,ForeignKey('organization.o_id'))
-    w_id=Column(Integer,ForeignKey('worklocation.w_id'))
     is_deleted=Column(Boolean,default=False)
 
     
 
-    def __init__(self,dept_name,dept_code,o_id,w_id,description: Optional[str]):
+    def __init__(self,dept_name,dept_code,o_id,description: Optional[str]):
         self.dept_name=dept_name
         self.dept_code=dept_code
         self.o_id=o_id
         self.description=description
-        self.w_id=w_id
         self.is_deleted=False
         
 
@@ -84,18 +82,13 @@ class Designation(Base):
     des_id=Column(Integer,primary_key=True,autoincrement=True)
     des_name=Column(String(50))
     o_id=Column(Integer,ForeignKey('organization.o_id'))
-    w_id=Column(Integer,ForeignKey('worklocation.w_id'))
-    d_id=Column(Integer,ForeignKey('department.d_id'))
     is_deleted=Column(Boolean,default=False)
 
 
     
 
-    def __init__(self,des_name,o_id,w_id,d_id):
+    def __init__(self,des_name):
         self.des_name=des_name
-        self.o_id=o_id
-        self.w_id=w_id
-        self.d_id=d_id
         self.is_deleted=False
         
         

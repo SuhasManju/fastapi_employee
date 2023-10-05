@@ -55,18 +55,7 @@ class WorkLocationResponse(BaseModel):
     state :str
     city: str
     pincode: int
-    org_name:str
-    
-    
 
-class InsertWorkLocation(BaseModel):
-    location_name: str
-    add_line1 :str
-    add_line2 : Optional[str]
-    state : str
-    city: str
-    pincode : int
-    org_name :str
     
 class UpdateWorkLocation(BaseModel):
     old_location_name: str
@@ -76,13 +65,13 @@ class UpdateWorkLocation(BaseModel):
     state: str
     city: str
     pincode : int
-    old_org_name: str
-    new_org_name : str
+
+
     
 
 class DeleteWorkLocation(BaseModel):
     location_name : str
-    org_name: str
+
 
 
 #department
@@ -92,67 +81,24 @@ class InsertDepartment(BaseModel):
     dept_name: str
     dept_code : str
     description : Optional[str]
-    org_name: str
-    location_name : str
     
-
-class DepartmentResponse(BaseModel):
-    dept_name: str
-    dept_code :str
-    description : str
-    org_name: str
-    location_name: str
-
 class UpdateDepartment(BaseModel):
     old_dept_name: str
     new_dept_name : str
     dept_code : str
     description : Optional[str]
-    old_org_name: str
-    new_org_name: str
-
-    old_location_name: str
-    new_location_name : str
 
 class DeleteDepartment(BaseModel):
     dept_name :str
-    org_name: str
-    location_name: str
 
 #designation
 
-class InsertDesignation(BaseModel):
-    des_name: str
-    org_name: str
-    location_name: str
-    dept_name: str
-    
-
 class DesignationResponse(BaseModel):
-   
     des_name:str
-    org_name: str
-    location_name: str
-    dept_name: str
-   
 
 class UpdateDesignation(BaseModel):
     old_des_name: str
     new_des_name : str
-    old_org_name: str
-    new_org_name :str
-    old_location_name: str
-    new_location_name: str
-    old_dept_name: str
-    new_dept_name : str
-  
-
-class DeleteDesignation(BaseModel):
-    des_name :str
-    org_name: str
-    location_name: str
-    
-
 
 #payschedule
 

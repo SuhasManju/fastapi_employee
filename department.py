@@ -1,125 +1,62 @@
-from fastapi import APIRouter,HTTPException,status,Query
-from schema import DepartmentResponse,DeleteDepartment,InsertDepartment,UpdateDepartment
-from model import Department,WorkLocation,Organization
+from fastapi import APIRouter,HTTPException,status,Depends
+from schema import InsertDepartment,UpdateDepartment,DeleteDepartment
+from model import Department
 from typing import List
 from database import session
+from users.user import autheniticate_user
+
 depart=APIRouter(tags=['department'])
 
-@depart.get("/department",response_model=List[DepartmentResponse])
-def get_department():
-    db=session()
-    result=db.query(Department).all()
-    if not result:
-        raise HTTPException(status_code=404,detail="Department not found")
-    x=[]
-    for r in result:
-        org_result=db.query(Organization).filter(Organization.o_id==r.o_id,Organization.is_deleted==False).first()
-        location_result=db.query(WorkLocation).filter(WorkLocation.w_id==r.w_id,WorkLocation.is_deleted==False).first()
-        if not (org_result and location_result):
-            continue
-        org_name=org_result.org_name
-        location_name=location_result.location_name
-        i=DepartmentResponse(
-            dept_name=r.dept_name,
-            dept_code=r.dept_code,
-            description=r.description,
-            org_name=org_name,
-            location_name=location_name
-        )
-        x.append(i)
-
-    return x
-
-@depart.get("/department/location",response_model=List[str])
-def get_department_specific(org_name:str=Query(),location_name:str=Query()):
-    db=session()
-    org_result=db.query(Organization).filter(Organization.org_name==org_name,Organization.is_deleted==False).first()
-    if not org_result:
-        raise HTTPException(status_code=404,detail="Organization not found")
-    o_id=org_result.o_id
-    workloc_result=db.query(WorkLocation).filter(WorkLocation.location_name==location_name,WorkLocation.o_id==o_id,Organization.is_deleted==False).first()
-    if not workloc_result:
-        raise HTTPException(status_code=404, detail="Worklocation not found")
-    w_id=workloc_result.w_id
-    result=db.query(Department).filter(Department.o_id==o_id,Department.w_id==w_id,Department.is_deleted==False).all()
-    if not result:
-        raise HTTPException(status_code=404,detail="Department not found")
-    x=[]
-    for r in result:
-        x.append(r.dept_name)
-    return x
-
-
-
 @depart.post("/department")
-def post_department(d: InsertDepartment):
+def add_department(dep:InsertDepartment,user=Depends(autheniticate_user)):
     db=session()
-    org_result=db.query(Organization).filter(Organization.org_name==d.org_name,Organization.is_deleted==False).first()
-    if not org_result:
-        raise HTTPException(status_code=404,detail='Organization not found')
-    o_id=org_result.o_id
-    work_result=db.query(WorkLocation).filter(WorkLocation.location_name==d.location_name,WorkLocation.o_id==o_id,WorkLocation.is_deleted==False).first()
-    if not work_result:
-        raise HTTPException(status_code=404,detail="Worklocation not found")
-    w_id=work_result.w_id
-    dept_result=db.query(Department).filter(Department.dept_name==d.dept_name,Department.o_id==o_id,Department.w_id==w_id,Department.is_deleted==False).first()
-    if dept_result:
-        raise HTTPException(status_code=409, detail="Department already exists")
-    dept=Department(d.dept_name,d.dept_code,o_id,w_id,d.description)
-    db.add(dept)
-    db.commit()
-    return {"message":"Successful creation"}
+    dep_result=db.query(Department).filter(Department.dept_name==dep.dept_name,Department.o_id==user['o_id'],Department.is_deleted==False).first()
+    if dep_result:
+        raise HTTPException(status_code=400,detail="Department already exists")
+    dep_obj=Department(dept_name=dep.dept_name,dept_code=dep.dept_code,o_id=user['o_id'],description=dep.description)
+    db.add(dep_obj)
+    db.close()
+    return {'message':"successfuly created"}
+
+@depart.get("/department",response_model=List[InsertDepartment])
+def retrive_department(user=Depends(autheniticate_user)):
+    db=session()
+    dep_result=db.query(Department).filter(Department.o_id==user['o_id'],Department.is_deleted==False).all()
+    if not dep_result:
+        raise HTTPException(status_code=404,detail="Department not found")
+    result=[]
+    for dep_one in dep_result:
+        result.append(InsertDepartment(dept_name=dep_one.dept_name,dept_code=dep_one.dept_code,description=dep_one.description))
+    db.close()
+    return result
 
 @depart.put("/department")
-def update_department(d: UpdateDepartment):
+def update_department(dep:UpdateDepartment,user=Depends(autheniticate_user)):
     db=session()
-    old_org_result=db.query(Organization).filter(Organization.org_name==d.old_org_name,Organization.is_deleted==False).first()
-    old_o_id=old_org_result.o_id
-    if not old_org_result:
-        raise HTTPException(status_code=404,detail='Organization not found')
-    new_org_result=db.query(Organization).filter(Organization.org_name==d.new_org_name,Organization.is_deleted==False).first()
-    if not new_org_result:
-        raise HTTPException(status_code=404,detail='Organization not found')
-    new_o_id=new_org_result.o_id
-    old_workloc_result=db.query(WorkLocation).filter(WorkLocation.location_name==d.old_location_name,WorkLocation.o_id==old_o_id,WorkLocation.is_deleted==False).first()
-    if not old_workloc_result:
-        raise HTTPException(status_code=404, detail='Worklocation not found')
-    old_w_id=old_workloc_result.w_id
-    new_workloc_result=db.query(WorkLocation).filter(WorkLocation.location_name==d.new_location_name,WorkLocation.o_id==new_o_id,WorkLocation.is_deleted==False).first()
-    if not new_workloc_result:
-        raise HTTPException(status_code=404, detail='Worklocation not found')
-    new_w_id=new_workloc_result.w_id
-    old_dept_result=db.query(Department).filter(Department.dept_name==d.old_dept_name,Department.o_id==old_o_id,Department.w_id==old_w_id,Department.is_deleted==False).first()
-    if not old_dept_result:
+    dep_result=db.query(Department).filter(Department.dept_name==dep.old_dept_name,Department.o_id==user['o_id'],Department.is_deleted==False).first()
+    if not dep_result:
         raise HTTPException(status_code=404,detail="Department not found")
-    new_dept_result=db.query(Department).filter(Department.dept_name==d.new_dept_name,Department.o_id==new_o_id,Department.w_id==new_w_id,Department.is_deleted==False).first()
-    if new_dept_result:
-        raise HTTPException(status_code=409,detail="Department already exists")
-    old_dept_result.dept_name=d.new_dept_name
-    old_dept_result.dept_code=d.dept_code
-    old_dept_result.description=d.description
-    old_dept_result.o_id=new_o_id
-    old_dept_result.w_id=new_w_id
+    new_dep_result=db.query(Department).filter(Department.dept_name==dep.new_dept_name,Department.is_deleted==False,Department.o_id==user['o_id']).first()
+    if new_dep_result:
+        raise HTTPException(status_code=400,detail="Department alread exists")
+    dep_result.dept_code=dep.dept_code
+    dep_result.dept_name=dep.new_dept_name
+    dep_result.description=dep.description
     db.commit()
-    return {'message':'Updated successfuly'}
+    db.close()
+    return {'message':"Department successfuly update"}
 
-@depart.delete('/department')
-def delete_department(d: DeleteDepartment):
+@depart.delete("/department")
+def delete_department(dep:DeleteDepartment,user=Depends(autheniticate_user)):
     db=session()
-    org_result=db.query(Organization).filter(Organization.org_name==d.old_org_name,Organization.is_deleted==False).first()
-    o_id=org_result.o_id
-    if not org_result:
-        raise HTTPException(status_code=404,detail='Organization not found')
-    work_result=db.query(WorkLocation).filter(WorkLocation.location_name==d.location_name,WorkLocation.o_id==o_id,WorkLocation.is_deleted==False).first()
-    if not work_result:
-        raise HTTPException(status_code=404,detail="Worklocation not found")
-    w_id=work_result.w_id
-    dept_result=db.query(Department).filter(Department.dept_name==d.dept_name,Department.o_id==o_id,Department.w_id==w_id,Department.is_deleted==False).first()
-    if not dept_result:
+    dep_result=db.query(Department).filter(Department.dept_name==dep.dept_name,Department.o_id==user['o_id'],Department.is_deleted==False).first()
+    if not dep_result:
         raise HTTPException(status_code=404,detail="Department not found")
-    db.delete(dept_result)
+    dep_result.is_deleted=True
     db.commit()
-    return {"message": " Deleted successfuly"}
+    db.close()
+    return {"message":"Successfully deleted"}
+
 
     
 
