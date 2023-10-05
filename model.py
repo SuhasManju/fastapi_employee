@@ -297,3 +297,22 @@ class PersonalInformation(Base):
     def __init__(self, **kwargs):
         super(PersonalInformation, self).__init__(**kwargs)
 
+class CalenderSettings(Base):
+    __tablename__="CalenderSettings"
+    id=Column(Integer,primary_key=True,autoincrement=True)
+    location=Column(Integer,ForeignKey('worklocation.w_id'))
+    week_starts_on=Column(String(50))
+    work_week_start_on=Column(String(50))
+    work_week_end_on=Column(String(50))
+    half_full_day=Column(String(50))
+    calender_starts=Column(String(50))
+    calender_ends=Column(String(50))
+    weekend_definition=Column(Text())
+    statutory_weekend=Column(Boolean)
+    created_by=Column(Integer)
+    updated_by=Column(Integer)
+    o_id=Column(Integer)
+    def __init__(self,**kwargs):
+        super(CalenderSettings,self).__init__(**kwargs)
+
+    
