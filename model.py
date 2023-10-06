@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String,Integer,Boolean,ForeignKey,TEXT,DateTime,Text,DATE
+from sqlalchemy import Column, String,Integer,Boolean,ForeignKey,TEXT,DateTime,Text,DATE,Time
 from typing import Optional
 from sqlalchemy.sql import func
 
@@ -308,4 +308,28 @@ class CalenderSettings(Base):
     def __init__(self,**kwargs):
         super(CalenderSettings,self).__init__(**kwargs)
 
-    
+class Shifts(Base):
+    __tablename__="shifts"
+    id=Column(Integer,primary_key=True,autoincrement=True)
+    shift_name =Column(String(50))
+    start_from = Column(Time)
+    to_time =Column(Time)
+    shift_margin =Column(Boolean,default=False)
+    hours_befor_shift = Column(String(50))
+    hours_after_shift=Column(String(50))
+    weekend =Column(String(150))
+    half_working_and_half_weekend =Column(Boolean,default=False)
+    weekend_defination =Column(Text())
+    department = Column(Text())
+    location = Column(Text())
+    division =Column(Text())
+    created_by=Column(Integer)
+    updated_by=Column(Integer)
+    o_id=Column(Integer,ForeignKey("organization.o_id"))
+    is_deleted= Column(Boolean,default=False)
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+
+    def __init__(self, **kwargs):
+        super(Shifts, self).__init__(**kwargs)
+        self.updated_at = func.now()
