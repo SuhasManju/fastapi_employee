@@ -10,6 +10,7 @@ from leave_type.leave_type import leave_type
 from currentleave.currentleave import currentleave_router
 from personalinformation.perinformation import perinformrouter
 from calender_settings.calender import calender
+from employee_calender.employee_calender import empcal
 from fastapi.middleware.cors import CORSMiddleware
 
 app=FastAPI()
@@ -27,6 +28,7 @@ app_router.include_router(leave_type)
 app_router.include_router(currentleave_router)
 app_router.include_router(perinformrouter)
 app_router.include_router(calender)
+app_router.include_router(empcal)
 app.include_router(app_router)
 
 

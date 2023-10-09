@@ -30,7 +30,7 @@ async def get_worklocation():
 
 
 @workloc.post("/worklocation")
-async def post_worklocation(w : InsertWorkLocation):
+async def post_worklocation(w : WorkLocationResponse):
     db=session()
     org_result=db.query(Organization).filter(Organization.org_name==w.org_name,Organization.is_deleted==False).first()
     if not org_result:

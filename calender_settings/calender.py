@@ -28,13 +28,13 @@ def add_calendersettings(cal:CalenderSettingResponse,user=Depends(autheniticate_
         calender_result=db.query(CalenderSettings).filter(CalenderSettings.location==location_result.w_id,CalenderSettings.o_id==user['o_id']).first()
         if calender_result:
             raise HTTPException(status_code=400,detail="Calender result already exists")
-        weekenddef=[cal.weekend_definition.Sunday,
-                    cal.weekend_definition.Monday,
+        weekenddef=[cal.weekend_definition.Monday,
                     cal.weekend_definition.Tuesday,
                     cal.weekend_definition.Wednesday,
                     cal.weekend_definition.Thursday,
                     cal.weekend_definition.Friday,
-                    cal.weekend_definition.Saturday]
+                    cal.weekend_definition.Saturday,
+                    cal.weekend_definition.Sunday,]
 
         cal_obj=CalenderSettings(
             location=location_result.w_id,
@@ -72,13 +72,13 @@ def get_calendersettings(user=Depends(autheniticate_user)):
                     r.append(i+1)
             return r
         week=WeekendDefinition(
-        Sunday=returnList(a[0]),
-        Monday=returnList(a[1]),
-        Tuesday=returnList(a[2]),
-        Wednesday=returnList(a[3]),
-        Thursday=returnList(a[4]),
-        Friday=returnList(a[5]),
-        Saturday=returnList(a[6]))
+        Sunday=returnList(a[6]),
+        Monday=returnList(a[0]),
+        Tuesday=returnList(a[1]),
+        Wednesday=returnList(a[2]),
+        Thursday=returnList(a[3]),
+        Friday=returnList(a[4]),
+        Saturday=returnList(a[5]))
         return week
     db=session()
     cal_all=db.query(CalenderSettings).filter(CalenderSettings.o_id==user['o_id']).all()
@@ -114,13 +114,14 @@ def update_calender(cal:CalenderSettingResponse,user=Depends(autheniticate_user)
     if not cal_result:
         raise HTTPException(status_code=404,detail="calender settings not found")
     
-    weekenddef=[cal.weekend_definition.Sunday,
+    weekenddef=[
                     cal.weekend_definition.Monday,
                     cal.weekend_definition.Tuesday,
                     cal.weekend_definition.Wednesday,
                     cal.weekend_definition.Thursday,
                     cal.weekend_definition.Friday,
-                    cal.weekend_definition.Saturday]
+                    cal.weekend_definition.Saturday,
+                    cal.weekend_definition.Sunday,]
     cal_result.week_starts_on=cal.week_start_on
     cal_result.work_week_start_on=cal.work_week_start_on
     cal_result.work_week_end_on=cal.work_week_end_on

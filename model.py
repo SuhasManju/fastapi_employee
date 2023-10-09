@@ -333,3 +333,15 @@ class Shifts(Base):
     def __init__(self, **kwargs):
         super(Shifts, self).__init__(**kwargs)
         self.updated_at = func.now()
+
+class EmployeeCalender(Base):
+    __tablename__="employeecalender"
+    id=Column(Integer,primary_key=True,autoincrement=True)
+    emp_id=Column(Integer,ForeignKey("employee.id",ondelete="CASCADE",onupdate="CASCADE"),nullable=False)
+    month=Column(Integer,nullable=False)
+    calender=Column(Text())
+    o_id=Column(Integer,ForeignKey("organization.o_id",ondelete="CASCADE",onupdate="CASCADE"))
+    
+    def __init__(self,**kwargs):
+        super(EmployeeCalender,self).__init__(**kwargs)
+        
