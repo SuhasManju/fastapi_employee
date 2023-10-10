@@ -15,6 +15,7 @@ def add_designation(des:DesignationResponse,user=Depends(autheniticate_user)):
         raise HTTPException(status_code=400,detail="Designation already exists")
     des_obj=Designation(des_name=des.des_name,o_id=user['o_id'])
     db.add(des_obj)
+    db.commit()
     db.close()
     return {"message":"Inserted successfuly"}
 

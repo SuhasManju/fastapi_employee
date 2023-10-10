@@ -11,6 +11,9 @@ from currentleave.currentleave import currentleave_router
 from personalinformation.perinformation import perinformrouter
 from calender_settings.calender import calender
 from employee_calender.employee_calender import empcal
+from shifts.shifts import shifts
+from attendance.attendance import attend
+from attendance_general_setting.attend_general import genral_attendance
 from fastapi.middleware.cors import CORSMiddleware
 
 app=FastAPI()
@@ -29,6 +32,9 @@ app_router.include_router(currentleave_router)
 app_router.include_router(perinformrouter)
 app_router.include_router(calender)
 app_router.include_router(empcal)
+app_router.include_router(shifts)
+app_router.include_router(attend)
+app_router.include_router(genral_attendance)
 app.include_router(app_router)
 
 

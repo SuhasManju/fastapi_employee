@@ -114,14 +114,13 @@ def update_calender(cal:CalenderSettingResponse,user=Depends(autheniticate_user)
     if not cal_result:
         raise HTTPException(status_code=404,detail="calender settings not found")
     
-    weekenddef=[
-                    cal.weekend_definition.Monday,
+    weekenddef=[cal.weekend_definition.Monday,
                     cal.weekend_definition.Tuesday,
                     cal.weekend_definition.Wednesday,
                     cal.weekend_definition.Thursday,
                     cal.weekend_definition.Friday,
                     cal.weekend_definition.Saturday,
-                    cal.weekend_definition.Sunday,]
+                    cal.weekend_definition.Sunday]
     cal_result.week_starts_on=cal.week_start_on
     cal_result.work_week_start_on=cal.work_week_start_on
     cal_result.work_week_end_on=cal.work_week_end_on

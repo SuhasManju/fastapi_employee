@@ -87,8 +87,9 @@ class Designation(Base):
 
     
 
-    def __init__(self,des_name):
+    def __init__(self,des_name,o_id):
         self.des_name=des_name
+        self.o_id=o_id
         self.is_deleted=False
         
         
@@ -345,3 +346,68 @@ class EmployeeCalender(Base):
     def __init__(self,**kwargs):
         super(EmployeeCalender,self).__init__(**kwargs)
         
+class Attendance(Base):
+    __tablename__='Attendance'
+    id=Column(Integer,primary_key=True,autoincrement=True)
+    emp_id=Column(Integer,ForeignKey("employee.id",ondelete="CASCADE",onupdate="CASCADE"),nullable=False)
+    date=Column(DATE)
+    check_in=Column(Time(),nullable=False)
+    check_out=Column(Time())
+
+    def __init__(self,**kwargs):
+        super(Attendance,self).__init__(**kwargs)
+class Attendance_General_settings(Base):
+    __tablename__ = "attendance_general_settings"
+    id = Column(Integer, primary_key=True, index=True)
+    effictive_from = Column(String(100))
+    default_shift_time = Column(String(100))
+    scale_view =Column(Boolean,default=False)
+    total_hour_calculation =Column(Text())
+    minimum_hours_required =Column(Text())
+    strict_mode_manual=Column(Boolean,default=False)
+    strict_mode_full_day=Column(String(50))
+    strict_mode_half_day=Column(String(50))
+    strict_shift_hours_full_day=Column(String(150))
+    strict_shift_hour_half_day=Column(String(150))
+    lenient_mode_manual =Column(Boolean,default=False)
+    lenient_mode_per_day=Column(String(50))
+    lenient_mode_shift =Column(String(50))
+    show_overtime_deveation=Column(Boolean,default=False)
+    maximum_hours_required=Column(Boolean,default=False)
+    round_off =Column(Boolean,default=False)
+    first_check_in = Column(String(50))
+    last_check_out=Column(String(50))
+    worked_hours=Column(String(50))     
+    enable_tracking=Column(Boolean,default=False)
+    location =Column(Text())
+    start_time=Column(String(50))
+    end_time=Column(String(50))
+    shift_margin_enable=Column(Boolean,default=False)
+    web_check_in_out=Column(Boolean,default=False)
+    mobile_check_in_out=Column(Boolean,default=False)
+    show_all_check_in_out=Column(Boolean,default=False)
+    view_report_entries=Column(Boolean,default=False)
+    edit_report_entries=Column(Boolean,default=False)
+    edit_own_entries=Column(Boolean,default=False)
+    show_attendance_report = Column(Text())
+    show_balance_over_time=Column(Text())
+    edit_balance_over_time=Column(Text())
+    track_in_out_location=Column(Boolean,default=False)
+    restrict_in_out_entries=Column(Boolean,default=False)
+    view_emp_shift_map =Column(Text())
+    edit_emp_shift_map=Column(Text())
+    allow_changing_shifts=Column(Boolean,default=False)
+    email_notification_modify=Column(Boolean,default=False)
+    feeds_notification_modify=Column(Boolean,default=False)
+    eligibility_shift_allowence=Column(String(50))
+    make_reason_mandatory=Column(Boolean,default=False)
+    o_id=Column(Integer,ForeignKey("organization.o_id"))
+    is_deleted = Column(Boolean, default=False)
+    created_by = Column(Integer)
+    updated_by = Column(Integer)
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+
+    def __init__(self, **kwargs):
+        super(Attendance_General_settings, self).__init__(**kwargs)
+        self.updated_at = func.now()

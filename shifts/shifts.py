@@ -36,14 +36,14 @@ def post_shifts(shift:ShiftsIn, current_user: User = Depends(autheniticate_user)
     for department_name in applicable.department:
             department = db.query(Department).filter(Department.dept_name == department_name,Department.is_deleted==False,Department.o_id==current_user.get('o_id')).first()
             if department:
-                department_ids.append(department.id)
+                department_ids.append(department.d_id)
         
    
         
     for location_name in applicable.location:
             location = db.query(WorkLocation).filter(WorkLocation.location_name == location_name,WorkLocation.is_deleted==False,WorkLocation.o_id==current_user.get('o_id')).first()
             if location:
-                location_ids.append(location.id)
+                location_ids.append(location.w_id)
         
        
     data_obj=Shifts(
