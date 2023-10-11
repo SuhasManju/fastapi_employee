@@ -5,5 +5,5 @@ from datetime import datetime
 
 class AttendanceIn(BaseModel):
     email:EmailStr
-    checkin:Optional[datetime]
-    checkout:Optional[datetime]
+    checkin:Optional[str]
+    checkout:Optional[str]

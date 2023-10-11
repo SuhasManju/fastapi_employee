@@ -356,9 +356,11 @@ class Attendance(Base):
 
     def __init__(self,**kwargs):
         super(Attendance,self).__init__(**kwargs)
+
+    
 class Attendance_General_settings(Base):
     __tablename__ = "attendance_general_settings"
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     effictive_from = Column(String(100))
     default_shift_time = Column(String(100))
     scale_view =Column(Boolean,default=False)
@@ -411,3 +413,38 @@ class Attendance_General_settings(Base):
     def __init__(self, **kwargs):
         super(Attendance_General_settings, self).__init__(**kwargs)
         self.updated_at = func.now()
+
+class Absent_Schedule(Base):
+    __tablename__="AbsentSchedule"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name=Column(String(50),nullable=False)
+    schedule_run=Column(Time(),nullable=False)
+    process_data=Column(Integer,nullable=False)
+    push_absense_to_leave_module=Column(Boolean())
+    notify_through_email=Column(Boolean())
+    department=Column(Text())
+    designation=Column(Text())
+    location=Column(Text())
+    role=Column(Text())
+    o_id=Column(Integer,ForeignKey("organization.o_id",ondelete='CASCADE',onupdate='CASCADE'))
+    created_by=Column(Integer)
+    updated_by=Column(Integer)
+
+    def __init__(self,**kwargs):
+        super(Absent_Schedule,self).__init__(**kwargs)
+
+class Present_Default(Base):
+    __tablename__='PresentDefault'
+    id=Column(Integer,primary_key=True,autoincrement=True)
+    name=Column(String(50))
+    users=Column(Text())
+    effective_from = Column(DATE)
+    effective_to = Column(DATE)
+    reason= Column(Text())
+    o_id=Column(Integer,ForeignKey("organization.o_id",ondelete='CASCADE',onupdate='CASCADE'))
+    created_by=Column(Integer)
+    updated_by=Column(Integer)
+
+    def __init__(self,**kwargs):
+        super(Present_Default,self).__init__(**kwargs)
+    
