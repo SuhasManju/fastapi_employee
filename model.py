@@ -133,17 +133,13 @@ class User(Base):
     name=Column(String(100))
     email=Column(String(100),unique=True)
     password_hash=Column(String(256))
-    ph_num=Column(String(20))
-    admin=Column(Boolean)
     created_by=Column(Integer)
     updated_by=Column(Integer)
+    admin=Column(Boolean)
     is_deleted=Column(Boolean,default=False)
 
-    def __init__(self,name,email,password_hash,ph_num):
-        self.name=name
-        self.email=email
-        self.password_hash=password_hash
-        self.ph_num=ph_num
+
+
 
 
 class Employee(Base):
@@ -182,6 +178,7 @@ class Employee(Base):
     workExperience=Column(Text())
     education_details=Column(Text())
     dependent_details=Column(Text())
+    is_deleted=Column(Boolean,default=False)
 
 
 
@@ -353,12 +350,16 @@ class Attendance(Base):
     date=Column(DATE)
     check_in=Column(Time(),nullable=False)
     check_out=Column(Time())
+    check_in_location_coord=Column(Text())
+    check_out_location_coord=Column(Text())
 
     def __init__(self,**kwargs):
         super(Attendance,self).__init__(**kwargs)
+
+    
 class Attendance_General_settings(Base):
     __tablename__ = "attendance_general_settings"
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     effictive_from = Column(String(100))
     default_shift_time = Column(String(100))
     scale_view =Column(Boolean,default=False)
@@ -411,3 +412,40 @@ class Attendance_General_settings(Base):
     def __init__(self, **kwargs):
         super(Attendance_General_settings, self).__init__(**kwargs)
         self.updated_at = func.now()
+
+class Absent_Schedule(Base):
+    __tablename__="AbsentSchedule"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name=Column(String(50),nullable=False)
+    schedule_run=Column(Time(),nullable=False)
+    process_data=Column(Integer,nullable=False)
+    push_absense_to_leave_module=Column(Boolean())
+    notify_through_email=Column(Boolean())
+    department=Column(Text())
+    designation=Column(Text())
+    location=Column(Text())
+    role=Column(Text())
+    o_id=Column(Integer,ForeignKey("organization.o_id",ondelete='CASCADE',onupdate='CASCADE'))
+    created_by=Column(Integer)
+    updated_by=Column(Integer)
+    is_deleted=Column(Boolean,default=False)
+
+    def __init__(self,**kwargs):
+        super(Absent_Schedule,self).__init__(**kwargs)
+
+class Present_Default(Base):
+    __tablename__='PresentDefault'
+    id=Column(Integer,primary_key=True,autoincrement=True)
+    name=Column(String(50))
+    users=Column(Text())
+    effective_from = Column(DATE)
+    effective_to = Column(DATE)
+    reason= Column(Text())
+    o_id=Column(Integer,ForeignKey("organization.o_id",ondelete='CASCADE',onupdate='CASCADE'))
+    created_by=Column(Integer)
+    updated_by=Column(Integer)
+    is_deleted=Column(Boolean,default=False)
+
+    def __init__(self,**kwargs):
+        super(Present_Default,self).__init__(**kwargs)
+    
