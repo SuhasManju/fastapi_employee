@@ -15,7 +15,10 @@ from shifts.shifts import shifts
 from attendance.attendance import attend
 from attendance_general_setting.attend_general import genral_attendance
 from present_default.present_default import present_def
+<<<<<<< HEAD
 from absent_schedule.absent_schedule import absent_sce
+=======
+>>>>>>> 3e67ed621641160a9c0a260a5c32f5e35fbccc23
 from fastapi.middleware.cors import CORSMiddleware
 
 app=FastAPI()
@@ -38,7 +41,10 @@ app_router.include_router(shifts)
 app_router.include_router(attend)
 app_router.include_router(genral_attendance)
 app_router.include_router(present_def)
+<<<<<<< HEAD
 app_router.include_router(absent_sce)
+=======
+>>>>>>> 3e67ed621641160a9c0a260a5c32f5e35fbccc23
 app.include_router(app_router)
 
 

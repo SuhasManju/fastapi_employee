@@ -428,7 +428,10 @@ class Absent_Schedule(Base):
     o_id=Column(Integer,ForeignKey("organization.o_id",ondelete='CASCADE',onupdate='CASCADE'))
     created_by=Column(Integer)
     updated_by=Column(Integer)
+<<<<<<< HEAD
     is_deleted=Column(Boolean,default=False)
+=======
+>>>>>>> 3e67ed621641160a9c0a260a5c32f5e35fbccc23
 
     def __init__(self,**kwargs):
         super(Absent_Schedule,self).__init__(**kwargs)
@@ -444,7 +447,10 @@ class Present_Default(Base):
     o_id=Column(Integer,ForeignKey("organization.o_id",ondelete='CASCADE',onupdate='CASCADE'))
     created_by=Column(Integer)
     updated_by=Column(Integer)
+<<<<<<< HEAD
     is_deleted=Column(Boolean,default=False)
+=======
+>>>>>>> 3e67ed621641160a9c0a260a5c32f5e35fbccc23
 
     def __init__(self,**kwargs):
         super(Present_Default,self).__init__(**kwargs)
