@@ -4,10 +4,7 @@ from users.user import autheniticate_user
 from model import Employee,Attendance,Shifts,Attendance_General_settings
 from database import session
 from datetime import datetime
-<<<<<<< HEAD
 import json
-=======
->>>>>>> 3e67ed621641160a9c0a260a5c32f5e35fbccc23
 # import redis
 
 
@@ -38,19 +35,12 @@ def post_attendance(att:AttendanceIn,request:Request,user=Depends(autheniticate_
         
         emp_attend=Attendance(emp_id=emp_result.id,
                           check_in=checkinTime.time(),
-<<<<<<< HEAD
                           date=checkinTime.date(),
                           check_in_location_coord=json.dumps(att.location))
         db.add(emp_attend)
     else:
         attend_result.check_out=checkoutTime.time()
         attend_result.check_out_location_coord=json.dumps(att.location)
-=======
-                          date=checkinTime.date())
-        db.add(emp_attend)
-    else:
-        attend_result.check_out=checkoutTime.time()
->>>>>>> 3e67ed621641160a9c0a260a5c32f5e35fbccc23
     db.commit()
     return {"mesage":"done"}
 

@@ -44,11 +44,8 @@ def get_present_deafult(user=Depends(autheniticate_user)):
         emp_email=[]
         for i in json.loads(def_one.users):
             emp=db.query(Employee).filter(Employee.id==i,Employee.o_id==user['o_id']).first()
-<<<<<<< HEAD
             if not emp:
                 continue
-=======
->>>>>>> 3e67ed621641160a9c0a260a5c32f5e35fbccc23
             emp_email.append(emp.email)
         result1.append(PresentDefaultIn(name=def_one.name,
                                         user=emp_email,
